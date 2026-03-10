@@ -3,40 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Genesys Messenger Language Switch</title>
+  <title>Genesys Knowledge Portal Language Switch</title>
 
   <style>
     body {
       font-family: Arial, Helvetica, sans-serif;
-      text-align: center;
       margin: 0;
-      padding: 60px 20px;
+      padding: 40px 20px;
       background: #f7f7f7;
+      color: #111827;
     }
 
     .container {
-      max-width: 720px;
+      max-width: 1100px;
       margin: 0 auto;
       background: #ffffff;
       border-radius: 12px;
-      padding: 32px 24px;
+      padding: 24px;
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
       margin-top: 0;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      text-align: center;
     }
 
     p {
-      color: #444;
-      margin-bottom: 24px;
+      text-align: center;
+      color: #4b5563;
+      margin-bottom: 20px;
     }
 
-    .button-group {
-      display: inline-flex;
+    .toolbar {
+      display: flex;
+      justify-content: center;
       gap: 12px;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
 
     button {
@@ -46,44 +50,33 @@
       border-radius: 8px;
       cursor: pointer;
       background: #111827;
-      color: white;
+      color: #fff;
     }
 
     button:hover {
-      opacity: 0.9;
+      opacity: 0.92;
     }
 
     .status {
       font-size: 14px;
-      color: #666;
-      margin-top: 12px;
-      text-align: left;
+      color: #4b5563;
+      text-align: center;
+      margin-bottom: 20px;
       word-break: break-word;
     }
 
-    .active-lang {
-      font-weight: bold;
-      color: #111827;
-    }
-
-    .debug-box {
+    .portal-wrapper {
       margin-top: 24px;
-      padding: 16px;
-      border-radius: 10px;
-      background: #f3f4f6;
-      text-align: left;
-      font-size: 13px;
-      color: #111827;
+      min-height: 600px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
     }
 
-    .debug-title {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-
-    .debug-log {
-      white-space: pre-wrap;
-      line-height: 1.5;
+    /* Required render target for Genesys Knowledge Portal */
+    #genesys-support-center {
+      min-height: 600px;
     }
   </style>
 
@@ -93,15 +86,7 @@
       TH: "fe82086b-a697-4787-af2b-5726ca4c4c49"
     };
 
-    const DEFAULT_LANG = "TH";
-
-    function debugLog(message) {
-      console.log(message);
-      const el = document.getElementById("debugLog");
-      if (el) {
-        el.textContent += message + "\n";
-      }
-    }
+    const DEFAULT_LANG = "EN";
 
     function getSelectedLanguage() {
       return localStorage.getItem("gcLang") || DEFAULT_LANG;
@@ -112,16 +97,9 @@
       window.location.reload();
     }
 
-    function loadGenesysMessenger() {
+    function loadGenesysKnowledgePortal() {
       const lang = getSelectedLanguage();
       const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
-      const scriptUrl = "https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js";
-
-      debugLog("Page URL: " + window.location.href);
-      debugLog("Hostname: " + window.location.hostname);
-      debugLog("Selected language: " + lang);
-      debugLog("Deployment ID: " + deploymentId);
-      debugLog("Loading bootstrap: " + scriptUrl);
 
       (function (g, e, n, es, ys) {
         g["_genesysJs"] = e;
@@ -136,33 +114,16 @@
         ys.src = n;
         ys.charset = "utf-8";
         ys.id = "genesys-bootstrap";
-
-        ys.onload = function () {
-          debugLog("Genesys bootstrap script loaded successfully.");
-        };
-
-        ys.onerror = function () {
-          debugLog("ERROR: Failed to load Genesys bootstrap script.");
-        };
-
         document.head.appendChild(ys);
       })(
         window,
         "Genesys",
-        scriptUrl,
+        "https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js",
         {
           environment: "prod-apne1",
           deploymentId: deploymentId
         }
       );
-
-      setTimeout(function () {
-        if (window.Genesys) {
-          debugLog("window.Genesys exists.");
-        } else {
-          debugLog("window.Genesys not found after load timeout.");
-        }
-      }, 3000);
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -171,39 +132,28 @@
 
       document.getElementById("currentLang").textContent = lang;
       document.getElementById("currentDeployment").textContent = deploymentId;
-      document.getElementById("currentHost").textContent = window.location.hostname;
-      document.getElementById("currentUrl").textContent = window.location.href;
 
-      loadGenesysMessenger();
+      loadGenesysKnowledgePortal();
     });
   </script>
 </head>
 <body>
   <div class="container">
-    <h1>Genesys Cloud Knowledge Portal</h1>
-    <p>Select language</p>
+    <h1>Genesys Knowledge Portal Demo</h1>
+    <p>Select language to load the correct Knowledge Portal deployment.</p>
 
-    <div class="button-group">
+    <div class="toolbar">
       <button type="button" onclick="switchLanguage('EN')">EN</button>
       <button type="button" onclick="switchLanguage('TH')">TH</button>
     </div>
 
     <div class="status">
-      Current language: <span id="currentLang" class="active-lang">-</span>
-    </div>
-    <div class="status">
+      Current language: <strong id="currentLang">-</strong><br />
       Deployment ID: <span id="currentDeployment">-</span>
     </div>
-    <div class="status">
-      Hostname: <span id="currentHost">-</span>
-    </div>
-    <div class="status">
-      URL: <span id="currentUrl">-</span>
-    </div>
 
-    <div class="debug-box">
-      <div class="debug-title">Debug Log</div>
-      <div id="debugLog" class="debug-log"></div>
+    <div class="portal-wrapper">
+      <div id="genesys-support-center"></div>
     </div>
   </div>
 </body>
