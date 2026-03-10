@@ -1,27 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>GC Knowledge Portal</title>
+<meta charset="UTF-8">
+<title>Genesys Web Messenger Language Switch</title>
 
-  <script type="text/javascript" charset="utf-8">
-  (function (g, e, n, es, ys) {
-    g['_genesysJs'] = e;
-    g[e] = g[e] || function () {
-      (g[e].q = g[e].q || []).push(arguments)
-    };
-    g[e].t = 1 * new Date();
-    g[e].c = es;
-    ys = document.createElement('script'); ys.async = 1; ys.src = n; ys.charset = 'utf-8'; document.head.appendChild(ys);
-  })(window, 'Genesys', 'https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js', {
-    environment: 'prod-apne1',
-    deploymentId: 'fe82086b-a697-4787-af2b-5726ca4c4c49'
-  });
+<style>
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    text-align:center;
+    margin-top:100px;
+}
+
+button{
+    font-size:18px;
+    padding:10px 20px;
+    margin:10px;
+    cursor:pointer;
+}
+</style>
+
+<script>
+
+function loadMessenger(lang) {
+
+    let deploymentId;
+
+    if (lang === "EN") {
+        deploymentId = "1ab7b0c7-e7f0-4223-8b42-094de485c804";
+    } else {
+        deploymentId = "fe82086b-a697-4787-af2b-5726ca4c4c49";
+    }
+
+    console.log("Loading Genesys Messenger:", lang, deploymentId);
+
+    // remove existing script if exists
+    const oldScript = document.getElementById("genesys-messenger-script");
+    if (oldScript) {
+        oldScript.remove();
+    }
+
+    // reset Genesys object
+    delete window.Genesys;
+    delete window._genesysJs;
+
+    // load new Genesys script
+    (function (g, e, n, es, ys) {
+        g['_genesysJs'] = e;
+        g[e] = g[e] || function () {
+            (g[e].q = g[e].q || []).push(arguments)
+        };
+        g[e].t = 1 * new Date();
+        g[e].c = es;
+
+        ys = document.createElement('script');
+        ys.async = 1;
+        ys.src = n;
+        ys.charset = 'utf-8';
+        ys.id = "genesys-messenger-script";
+
+        document.head.appendChild(ys);
+
+    })(window, 'Genesys', 'https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js', {
+        environment: 'prod-apne1',
+        deploymentId: deploymentId
+    });
+
+}
+
+// load TH by default
+window.onload = function(){
+    loadMessenger("TH");
+}
+
 </script>
 
 </head>
+
 <body>
 
-<div id="genesys-support-center"></div>
+<h1>Genesys Cloud Messenger Demo</h1>
+
+<p>Select Language</p>
+
+<button onclick="loadMessenger('EN')">🇬🇧 English</button>
+<button onclick="loadMessenger('TH')">🇹🇭 ไทย</button>
 
 </body>
 </html>
