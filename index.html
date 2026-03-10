@@ -57,11 +57,33 @@
       font-size: 14px;
       color: #666;
       margin-top: 12px;
+      text-align: left;
+      word-break: break-word;
     }
 
     .active-lang {
       font-weight: bold;
       color: #111827;
+    }
+
+    .debug-box {
+      margin-top: 24px;
+      padding: 16px;
+      border-radius: 10px;
+      background: #f3f4f6;
+      text-align: left;
+      font-size: 13px;
+      color: #111827;
+    }
+
+    .debug-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .debug-log {
+      white-space: pre-wrap;
+      line-height: 1.5;
     }
   </style>
 
@@ -72,6 +94,14 @@
     };
 
     const DEFAULT_LANG = "TH";
+
+    function debugLog(message) {
+      console.log(message);
+      const el = document.getElementById("debugLog");
+      if (el) {
+        el.textContent += message + "\n";
+      }
+    }
 
     function getSelectedLanguage() {
       return localStorage.getItem("gcLang") || DEFAULT_LANG;
@@ -85,6 +115,13 @@
     function loadGenesysMessenger() {
       const lang = getSelectedLanguage();
       const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
+      const scriptUrl = "https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js";
+
+      debugLog("Page URL: " + window.location.href);
+      debugLog("Hostname: " + window.location.hostname);
+      debugLog("Selected language: " + lang);
+      debugLog("Deployment ID: " + deploymentId);
+      debugLog("Loading bootstrap: " + scriptUrl);
 
       (function (g, e, n, es, ys) {
         g["_genesysJs"] = e;
@@ -99,31 +136,43 @@
         ys.src = n;
         ys.charset = "utf-8";
         ys.id = "genesys-bootstrap";
+
+        ys.onload = function () {
+          debugLog("Genesys bootstrap script loaded successfully.");
+        };
+
+        ys.onerror = function () {
+          debugLog("ERROR: Failed to load Genesys bootstrap script.");
+        };
+
         document.head.appendChild(ys);
       })(
         window,
         "Genesys",
-        "https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js",
+        scriptUrl,
         {
           environment: "prod-apne1",
           deploymentId: deploymentId
         }
       );
+
+      setTimeout(function () {
+        if (window.Genesys) {
+          debugLog("window.Genesys exists.");
+        } else {
+          debugLog("window.Genesys not found after load timeout.");
+        }
+      }, 3000);
     }
 
     document.addEventListener("DOMContentLoaded", function () {
       const lang = getSelectedLanguage();
+      const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
 
-      const currentLangEl = document.getElementById("currentLang");
-      const currentDeploymentEl = document.getElementById("currentDeployment");
-
-      if (currentLangEl) {
-        currentLangEl.textContent = lang;
-      }
-
-      if (currentDeploymentEl) {
-        currentDeploymentEl.textContent = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
-      }
+      document.getElementById("currentLang").textContent = lang;
+      document.getElementById("currentDeployment").textContent = deploymentId;
+      document.getElementById("currentHost").textContent = window.location.hostname;
+      document.getElementById("currentUrl").textContent = window.location.href;
 
       loadGenesysMessenger();
     });
@@ -131,8 +180,8 @@
 </head>
 <body>
   <div class="container">
-    <h1>Genesys Cloud Messenger Demo</h1>
-    <p>Select language to load the correct Web Messenger deployment.</p>
+    <h1>Genesys Cloud Knowledge Portal</h1>
+    <p>Select language</p>
 
     <div class="button-group">
       <button type="button" onclick="switchLanguage('EN')">EN</button>
@@ -144,6 +193,17 @@
     </div>
     <div class="status">
       Deployment ID: <span id="currentDeployment">-</span>
+    </div>
+    <div class="status">
+      Hostname: <span id="currentHost">-</span>
+    </div>
+    <div class="status">
+      URL: <span id="currentUrl">-</span>
+    </div>
+
+    <div class="debug-box">
+      <div class="debug-title">Debug Log</div>
+      <div id="debugLog" class="debug-log"></div>
     </div>
   </div>
 </body>
