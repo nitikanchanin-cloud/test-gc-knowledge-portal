@@ -1,89 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Genesys Web Messenger Language Switch</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genesys Messenger Language Switch</title>
 
-<style>
-body{
-    font-family: Arial, Helvetica, sans-serif;
-    text-align:center;
-    margin-top:100px;
-}
-
-button{
-    font-size:18px;
-    padding:10px 20px;
-    margin:10px;
-    cursor:pointer;
-}
-</style>
-
-<script>
-
-function loadMessenger(lang) {
-
-    let deploymentId;
-
-    if (lang === "EN") {
-        deploymentId = "1ab7b0c7-e7f0-4223-8b42-094de485c804";
-    } else {
-        deploymentId = "fe82086b-a697-4787-af2b-5726ca4c4c49";
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 60px 20px;
+      background: #f7f7f7;
     }
 
-    console.log("Loading Genesys Messenger:", lang, deploymentId);
-
-    // remove existing script if exists
-    const oldScript = document.getElementById("genesys-messenger-script");
-    if (oldScript) {
-        oldScript.remove();
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 32px 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     }
 
-    // reset Genesys object
-    delete window.Genesys;
-    delete window._genesysJs;
+    h1 {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
 
-    // load new Genesys script
-    (function (g, e, n, es, ys) {
-        g['_genesysJs'] = e;
+    p {
+      color: #444;
+      margin-bottom: 24px;
+    }
+
+    .button-group {
+      display: inline-flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #111827;
+      color: white;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #666;
+      margin-top: 12px;
+    }
+
+    .active-lang {
+      font-weight: bold;
+      color: #111827;
+    }
+  </style>
+
+  <script>
+    const DEPLOYMENTS = {
+      EN: "1ab7b0c7-e7f0-4223-8b42-094de485c804",
+      TH: "fe82086b-a697-4787-af2b-5726ca4c4c49"
+    };
+
+    const DEFAULT_LANG = "TH";
+
+    function getSelectedLanguage() {
+      return localStorage.getItem("gcLang") || DEFAULT_LANG;
+    }
+
+    function switchLanguage(lang) {
+      localStorage.setItem("gcLang", lang);
+      window.location.reload();
+    }
+
+    function loadGenesysMessenger() {
+      const lang = getSelectedLanguage();
+      const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
+
+      (function (g, e, n, es, ys) {
+        g["_genesysJs"] = e;
         g[e] = g[e] || function () {
-            (g[e].q = g[e].q || []).push(arguments)
+          (g[e].q = g[e].q || []).push(arguments);
         };
         g[e].t = 1 * new Date();
         g[e].c = es;
 
-        ys = document.createElement('script');
+        ys = document.createElement("script");
         ys.async = 1;
         ys.src = n;
-        ys.charset = 'utf-8';
-        ys.id = "genesys-messenger-script";
-
+        ys.charset = "utf-8";
+        ys.id = "genesys-bootstrap";
         document.head.appendChild(ys);
+      })(
+        window,
+        "Genesys",
+        "https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js",
+        {
+          environment: "prod-apne1",
+          deploymentId: deploymentId
+        }
+      );
+    }
 
-    })(window, 'Genesys', 'https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js', {
-        environment: 'prod-apne1',
-        deploymentId: deploymentId
+    document.addEventListener("DOMContentLoaded", function () {
+      const lang = getSelectedLanguage();
+
+      const currentLangEl = document.getElementById("currentLang");
+      const currentDeploymentEl = document.getElementById("currentDeployment");
+
+      if (currentLangEl) {
+        currentLangEl.textContent = lang;
+      }
+
+      if (currentDeploymentEl) {
+        currentDeploymentEl.textContent = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
+      }
+
+      loadGenesysMessenger();
     });
-
-}
-
-// load TH by default
-window.onload = function(){
-    loadMessenger("TH");
-}
-
-</script>
-
+  </script>
 </head>
-
 <body>
+  <div class="container">
+    <h1>Genesys Cloud Messenger Demo</h1>
+    <p>Select language to load the correct Web Messenger deployment.</p>
 
-<h1>Genesys Cloud Messenger Demo</h1>
+    <div class="button-group">
+      <button type="button" onclick="switchLanguage('EN')">EN</button>
+      <button type="button" onclick="switchLanguage('TH')">TH</button>
+    </div>
 
-<p>Select Language</p>
-
-<button onclick="loadMessenger('EN')">🇬🇧 English</button>
-<button onclick="loadMessenger('TH')">🇹🇭 ไทย</button>
-
+    <div class="status">
+      Current language: <span id="currentLang" class="active-lang">-</span>
+    </div>
+    <div class="status">
+      Deployment ID: <span id="currentDeployment">-</span>
+    </div>
+  </div>
 </body>
 </html>
