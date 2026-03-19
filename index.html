@@ -80,83 +80,25 @@
     }
   </style>
 
-  <script>
-    const DEPLOYMENTS = {
-      EN: "7796af62-66b0-46b0-b43e-d4d547d5b071",
-      TH: "7796af62-66b0-46b0-b43e-d4d547d5b071"
+  <script type="text/javascript" charset="utf-8">
+  (function (g, e, n, es, ys) {
+    g['_genesysJs'] = e;
+    g[e] = g[e] || function () {
+      (g[e].q = g[e].q || []).push(arguments)
     };
-
-    const DEFAULT_LANG = "TH";
-
-    function getSelectedLanguage() {
-      return localStorage.getItem("gcLang") || DEFAULT_LANG;
-    }
-
-    function switchLanguage(lang) {
-      localStorage.setItem("gcLang", lang);
-      window.location.reload();
-    }
-
-    function loadGenesysKnowledgePortal() {
-      const lang = getSelectedLanguage();
-      const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
-
-      (function (g, e, n, es, ys) {
-        g["_genesysJs"] = e;
-        g[e] = g[e] || function () {
-          (g[e].q = g[e].q || []).push(arguments);
-        };
-        g[e].t = 1 * new Date();
-        g[e].c = es;
-
-        ys = document.createElement("script");
-        ys.async = 1;
-        ys.src = n;
-        ys.charset = "utf-8";
-        ys.id = "genesys-bootstrap";
-        document.head.appendChild(ys);
-      })(
-        window,
-        "Genesys",
-        "https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js",
-        {
-          environment: "prod-apne1",
-          deploymentId: deploymentId
-        }
-      );
-    }
-
-    document.addEventListener("DOMContentLoaded", function () {
-      const lang = getSelectedLanguage();
-      const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
-
-      document.getElementById("currentLang").textContent = lang;
-      document.getElementById("currentDeployment").textContent = deploymentId;
-
-      loadGenesysKnowledgePortal();
-    });
-  </script>
+    g[e].t = 1 * new Date();
+    g[e].c = es;
+    ys = document.createElement('script'); ys.async = 1; ys.src = n; ys.charset = 'utf-8'; document.head.appendChild(ys);
+  })(window, 'Genesys', 'https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js', {
+    environment: 'prod-apne1',
+    deploymentId: '7796af62-66b0-46b0-b43e-d4d547d5b071'
+  });
+</script>
+  
 </head>
 <body>
-  <div class="container">
-<!--
-    <h1>Genesys Knowledge Portal Demo</h1>
-    <p>Select language to load the correct Knowledge Portal deployment.</p>
--->
-    <div class="toolbar">
-      <button type="button" onclick="switchLanguage('EN')">EN</button>
-      <button type="button" onclick="switchLanguage('TH')">TH</button>
-    </div>
-<!--
-    <div class="status">
-      Current language: <strong id="currentLang">-</strong><br />
-      Deployment ID: <span id="currentDeployment">-</span>
-    </div>
--->
-
-    <div class="portal-wrapper">
+  <div class="portal-wrapper">
       <div id="genesys-support-center"></div>
-    </div>
   </div>
 </body>
 </html>

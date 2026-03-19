@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genesys Knowledge Portal Language Switch</title>
+
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 40px 20px;
+      background: #f7f7f7;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    p {
+      text-align: center;
+      color: #4b5563;
+      margin-bottom: 20px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #111827;
+      color: #fff;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .status {
+      font-size: 14px;
+      color: #4b5563;
+      text-align: center;
+      margin-bottom: 20px;
+      word-break: break-word;
+    }
+
+    .portal-wrapper {
+      margin-top: 24px;
+      min-height: 600px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #fff;
+    }
+
+    /* Required render target for Genesys Knowledge Portal */
+    #genesys-support-center {
+      min-height: 600px;
+    }
+  </style>
+
+  <script>
+    const DEPLOYMENTS = {
+      EN: "7796af62-66b0-46b0-b43e-d4d547d5b071",
+      TH: "7796af62-66b0-46b0-b43e-d4d547d5b071"
+    };
+
+    const DEFAULT_LANG = "TH";
+
+    function getSelectedLanguage() {
+      return localStorage.getItem("gcLang") || DEFAULT_LANG;
+    }
+
+    function switchLanguage(lang) {
+      localStorage.setItem("gcLang", lang);
+      window.location.reload();
+    }
+
+    function loadGenesysKnowledgePortal() {
+      const lang = getSelectedLanguage();
+      const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
+
+      (function (g, e, n, es, ys) {
+        g["_genesysJs"] = e;
+        g[e] = g[e] || function () {
+          (g[e].q = g[e].q || []).push(arguments);
+        };
+        g[e].t = 1 * new Date();
+        g[e].c = es;
+
+        ys = document.createElement("script");
+        ys.async = 1;
+        ys.src = n;
+        ys.charset = "utf-8";
+        ys.id = "genesys-bootstrap";
+        document.head.appendChild(ys);
+      })(
+        window,
+        "Genesys",
+        "https://apps.mypurecloud.jp/genesys-bootstrap/genesys.min.js",
+        {
+          environment: "prod-apne1",
+          deploymentId: deploymentId
+        }
+      );
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const lang = getSelectedLanguage();
+      const deploymentId = DEPLOYMENTS[lang] || DEPLOYMENTS[DEFAULT_LANG];
+
+      document.getElementById("currentLang").textContent = lang;
+      document.getElementById("currentDeployment").textContent = deploymentId;
+
+      loadGenesysKnowledgePortal();
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+
+    <h1>Genesys Knowledge Portal Demo</h1>
+    <p>Select language to load the correct Knowledge Portal deployment.</p>
+
+    <div class="toolbar">
+      <button type="button" onclick="switchLanguage('EN')">EN</button>
+      <button type="button" onclick="switchLanguage('TH')">TH</button>
+    </div>
+
+    <div class="status">
+      Current language: <strong id="currentLang">-</strong><br />
+      Deployment ID: <span id="currentDeployment">-</span>
+    </div>
+
+    <div class="portal-wrapper">
+      <div id="genesys-support-center"></div>
+    </div>
+  </div>
+</body>
+</html>
