@@ -82,11 +82,11 @@
 
   <script>
     const DEPLOYMENTS = {
-      EN: "1ab7b0c7-e7f0-4223-8b42-094de485c804",
-      TH: "fe82086b-a697-4787-af2b-5726ca4c4c49"
+      EN: "7796af62-66b0-46b0-b43e-d4d547d5b071",
+      TH: "7796af62-66b0-46b0-b43e-d4d547d5b071"
     };
 
-    const DEFAULT_LANG = "EN";
+    const DEFAULT_LANG = "TH";
 
     function getSelectedLanguage() {
       return localStorage.getItem("gcLang") || DEFAULT_LANG;
@@ -139,6 +139,7 @@
 </head>
 <body>
   <div class="container">
+    <!--
     <h1>Genesys Knowledge Portal Demo</h1>
     <p>Select language to load the correct Knowledge Portal deployment.</p>
 
@@ -151,6 +152,7 @@
       Current language: <strong id="currentLang">-</strong><br />
       Deployment ID: <span id="currentDeployment">-</span>
     </div>
+    -->
 
     <div class="portal-wrapper">
       <div id="genesys-support-center"></div>
